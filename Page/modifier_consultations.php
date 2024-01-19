@@ -1,29 +1,15 @@
 <?php
 include('menu.php');
-session_start();
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
+include('bdd.php');
 
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
+
 
 // Initialiser les variables pour stocker les valeurs du formulaire
 $id = $date_consultation = $heure_consultation = $duree_consultation = $id_medecin = "";
 $error_message = "";
 
 try {
-    // Connexion à la base de données avec PDO
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Définir le mode d'erreur PDO à exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
+    
     // Requête pour récupérer la liste des médecins
     $sql_medecins = "SELECT id, nom, prenom FROM medecins";
     $result_medecins = $conn->query($sql_medecins);
@@ -104,64 +90,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier une Consultation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h2 {
-            padding: 20px;
-            text-align: center;
-        }
-
-        form {
-            width: 50%;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            margin-bottom: 300px;
-        }
-
-        label {
-            display: block;
-            margin: 10px 0;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: white;
-            cursor: pointer;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        .success-message {
-            color: green;
-            margin-top: 10px;
-        }
-
-        .error-message {
-            color: red;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="../Css/modifier_consultations.css">
 </head>
 <body>
 
@@ -197,6 +126,10 @@ try {
 
         <input type="submit" value="Enregistrer Modification">
     </form>
+
+    <?php
+    include('footer.php');
+    ?>
 
 </body>
 </html>

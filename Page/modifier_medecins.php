@@ -1,20 +1,8 @@
 <?php
 
-session_start();
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
-
 include('menu.php');
+include('bdd.php');
     
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
 
 // Initialiser les variables pour stocker les valeurs du formulaire
 $id_medecin = $civilite = $nom = $prenom = "";
@@ -24,11 +12,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
     $id_medecin = $_GET["id"];
 
     try {
-        // Connexion à la base de données avec PDO
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        // Définir le mode d'erreur PDO à exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         // Requête pour récupérer les informations du médecin à modifier
         $sql = "SELECT * FROM medecins WHERE id = :id";
         $stmt = $conn->prepare($sql);
@@ -57,11 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $prenom = $_POST["prenom"];
 
     try {
-        // Connexion à la base de données avec PDO
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        // Définir le mode d'erreur PDO à exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         // Requête pour mettre à jour les informations du médecin
         $sql = "UPDATE medecins SET
                 civilite = :civilite,
@@ -84,7 +62,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Erreur de modification de médecin : " . $e->getMessage();
     }
 
-    // Fermer la connexion (PDO se déconnecte automatiquement à la fin du script)
 }
 ?>
 
@@ -94,56 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier un Médecin</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h2 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        form {
-            width: 50%;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        select, input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="../Css/modifier_medecins.css">
 </head>
 <body>
 
@@ -157,7 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <select name="civilite" required>
                 <option value="M." <?php if ($civilite == "M.") echo "selected"; ?>>M.</option>
                 <option value="Mme" <?php if ($civilite == "Mme") echo "selected"; ?>>Mme</option>
-                <!-- Ajouter d'autres options si nécessaire -->
             </select><br>
 
             <label for="nom">Nom:</label>
@@ -171,6 +98,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php } else {
         echo "Aucun médecin sélectionné.";
     } ?>
+
+<?php
+    include('footer.php');
+    ?>
 
 </body>
 </html>

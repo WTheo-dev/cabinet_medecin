@@ -1,25 +1,8 @@
 <?php
 include('menu.php');
-session_start();
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
-
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
+include('bdd.php');
 
 try {
-    // Connexion à la base de données avec PDO
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Définir le mode d'erreur PDO à exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     // Requête pour récupérer la liste des médecins
     $sql_medecins = "SELECT id, nom, prenom FROM medecins";
     $result_medecins = $conn->query($sql_medecins);
@@ -73,68 +56,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Affichage des Consultations</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h2 {
-            padding: 20px;
-            text-align: center;
-        }
-
-        form {
-            width: 60%;
-            margin: 10px auto;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        label, select {
-            display: block;
-            margin: 10px 0;
-        }
-
-        select {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            margin-bottom: 200px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #4caf50;
-            color: white;
-        }
-
-    </style>
+    <link rel="stylesheet" href="../Css/affichage_consultations.css">
 </head>
 <body>
 
@@ -159,8 +81,8 @@ try {
 <table border="1">
     <tr>
         <th>ID</th>
-        <th>Nom Usager</th>
-        <th>Prénom Usager</th>
+        <th>Nom Patient</th>
+        <th>Prénom Patient</th>
         <th>Nom du Médecin</th>
         <th>Date Consultation</th>
         <th>Heure Consultation</th>
@@ -176,7 +98,7 @@ try {
         echo "<td>{$row['nom_usager']}</td>";
         echo "<td>{$row['prenom_usager']}</td>";
         echo "<td>{$row['prenom_medecin']} {$row['nom_medecin']}</td>";
-        echo "<td>{$row['date_consultation']}</td>";
+        echo "<td>" . strftime('%d/%m/%Y', strtotime($row['date_consultation'])) . "</td>";
         echo "<td>{$row['heure_consultation']}</td>";
         echo "<td>{$row['duree_consultation']}</td>";
         echo "<td><a href='modifier_consultations.php?id=".$row["id"]."'>Modifier</a></td>";
@@ -185,6 +107,10 @@ try {
     }
     ?>
 </table>
+
+    <?php
+        include('footer.php');
+    ?>
 
 
 </body>

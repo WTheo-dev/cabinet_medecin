@@ -1,18 +1,6 @@
 <?php
 include('menu.php');
-session_start();
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
-
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
+include('bdd.php');
 
 // Initialiser la variable pour stocker l'identifiant du médecin à supprimer
 $id_medecin = "";
@@ -22,11 +10,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
     $id_medecin = $_GET["id"];
 
     try {
-        // Connexion à la base de données avec PDO
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        // Définir le mode d'erreur PDO à exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         // Requête pour supprimer le médecin
         $sql = "DELETE FROM medecins WHERE id = :id_medecin";
         $stmt = $conn->prepare($sql);
@@ -42,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
         echo "Erreur de suppression de médecin : " . $e->getMessage();
     }
 
-    // Fermer la connexion (PDO se déconnecte automatiquement à la fin du script)
+    
 }
 ?>
 
@@ -60,6 +43,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["id"])) {
     } else {
         echo "Aucun médecin sélectionné.";
     } ?>
+
+
+<?php
+    include('footer.php');
+    ?>
 
 </body>
 </html>

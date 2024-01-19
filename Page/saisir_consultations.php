@@ -1,30 +1,14 @@
 <?php
 include('menu.php');
-session_start();
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
+include('bdd.php');
 
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
 
 // Initialiser les variables pour stocker les valeurs du formulaire
 $id_usager = $id_medecin = $date_consultation = $heure_consultation = $duree_consultation = "";
 $error_message = "";
 
 try {
-    // Connexion à la base de données avec PDO
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Définir le mode d'erreur PDO à exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Requête pour récupérer la liste des usagers
+    // Requête pour récupérer la liste des patients
     $sql_usagers = "SELECT id, nom, prenom, id_medecin_referent FROM usagers";
     $result_usagers = $conn->query($sql_usagers);
 
@@ -39,7 +23,7 @@ try {
         $heure_consultation = $_POST["heure_consultation"];
         $duree_consultation = $_POST["duree_consultation"]; // Ajout de la récupération de la durée
 
-        // Vérifier si un rendez-vous existe déjà pour ce médecin ou cet usager à la même date et heure
+        // Vérifier si un rendez-vous existe déjà pour ce médecin ou ce patient à la même date et heure
         $sql_check_duplicate = "SELECT COUNT(*) as count_duplicates FROM rendez_vous
                                 WHERE (id_usager = :id_usager OR id_medecin = :id_medecin)
                                 AND date_consultation = :date_consultation
@@ -56,15 +40,8 @@ try {
 
         // Si un rendez-vous existe déjà, afficher un message d'erreur
         if ($result_check_duplicate['count_duplicates'] > 0) {
-            $error_message = "Un rendez-vous existe déjà pour ce médecin ou cet usager à la même date et heure.";
+            $error_message = "Un rendez-vous existe déjà pour ce médecin ou ce patient à la même date et heure.";
         } else {
-            // Insertion du nouveau rendez-vous
-            // ... (code d'insertion du rendez-vous dans la base de données)
-            // Connexion à la base de données avec PDO
-            $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-            // Définir le mode d'erreur PDO à exception
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
             // Requête pour enregistrer la consultation
             $sql = "INSERT INTO rendez_vous (id_usager, id_medecin, date_consultation, heure_consultation, duree_consultation) 
                     VALUES (:id_usager, :id_medecin, :date_consultation, :heure_consultation, :duree_consultation)";
@@ -93,54 +70,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saisir une Consultation</title>
-    <style>
-        .error {
-            color: red;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h2 {
-            padding: 20px;
-            text-align: center;
-        }
-
-        form {
-            width: 50%;
-            margin: 10px auto;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            margin-bottom: 300px;
-        }
-
-        label, select, input {
-            display: block;
-            margin: 10px 0;
-        }
-
-        select, input {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: white;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <link rel="stylesheet" href="../Css/saisir_consultations.css">
 </head>
 <body>
 
@@ -154,29 +84,28 @@ try {
     ?>
 
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <label for="id_usager">Usager:</label>
-        <select name="id_usager" required onchange="updateMedecin()">
-            <option value="">Sélectionner un usager</option>
-            <?php
-            // Afficher la liste des usagers
-            while ($row_usager = $result_usagers->fetch(PDO::FETCH_ASSOC)) {
-                echo "<option value='".$row_usager["id"]."'>".$row_usager["nom"]." ".$row_usager["prenom"]."</option>";
-            }
-            ?>
-        </select>
+    <label for="id_usager">Patient:</label>
+<select name="id_usager" id="id_usager" required>
+    <option value="">Sélectionner un usager</option>
+    <?php
+    // Afficher la liste des patients
+    while ($row_usager = $result_usagers->fetch(PDO::FETCH_ASSOC)) {
+        echo "<option value='".$row_usager["id"]."' data-medecin='".$row_usager["id_medecin_referent"]."'>".$row_usager["prenom"]." ".$row_usager["nom"]."</option>";
+    }
+    ?>
+</select>
 
-        <label for="id_medecin">Médecin:</label>
-        <select name="id_medecin" required>
-            <option value="">Sélectionner un médecin</option>
-            <?php
-            // Afficher la liste des médecins
-            while ($row_medecin = $result_medecins->fetch(PDO::FETCH_ASSOC)) {
-                echo "<option value='".$row_medecin["id"]."'>".$row_medecin["nom"]." ".$row_medecin["prenom"]."</option>";
-            }
-            ?>
-        </select>
+<label for="id_medecin">Médecin:</label>
+<select name="id_medecin" required id="id_medecin">
+    <option value="">Sélectionner un médecin</option>
+    <?php
+    // Afficher la liste des médecins
+    while ($row_medecin = $result_medecins->fetch(PDO::FETCH_ASSOC)) {
+        echo "<option value='".$row_medecin["id"]."'>".$row_medecin["prenom"]." ".$row_medecin["nom"]."</option>";
+    }
+    ?>
+</select>
 
-        <!-- Utiliser la date et l'heure actuelles par défaut -->
         <label for="date_consultation">Date de Consultation:</label>
         <input type="date" name="date_consultation" value="<?php echo date('Y-m-d'); ?>" required>
 
@@ -189,11 +118,27 @@ try {
         <input type="submit" value="Enregistrer Consultation">
     </form>
 
-    <script>
-        function updateMedecin() {
-            // ... (code JavaScript pour mettre à jour le médecin par défaut en fonction de l'usager sélectionné)
-        }
-    </script>
+    <?php
+    include('footer.php');
+    ?>
+
+<script>
+document.getElementById('id_usager').addEventListener('change', function() {
+    var usagerSelect = this;
+    var medecinSelect = document.getElementById('id_medecin');
+    
+    // Si le patient a un médecin référent, sélectionnez automatiquement ce médecin
+    var selectedMedecinId = usagerSelect.options[usagerSelect.selectedIndex].getAttribute('data-medecin');
+    
+    if (selectedMedecinId !== null) {
+        medecinSelect.value = selectedMedecinId;
+    } else {
+        medecinSelect.value = ""; // Réinitialiser le champ du médecin si le patient n'a pas de médecin référent
+    }
+});
+</script>
+
+
 
 </body>
 </html>

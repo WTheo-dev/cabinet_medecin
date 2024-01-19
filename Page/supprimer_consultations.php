@@ -1,28 +1,11 @@
 <?php
 include('menu.php');
-session_start();
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
-
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
+include('bdd.php');
 
 // Initialiser la variable pour stocker l'ID du rendez-vous
 $id = "";
 
 try {
-    // Connexion à la base de données avec PDO
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Définir le mode d'erreur PDO à exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     // Vérification si l'ID du rendez-vous est passé en paramètre
     if (isset($_GET["id"])) {
         $id = $_GET["id"];
@@ -62,6 +45,10 @@ try {
 
     <p>Vous allez être redirigé vers la page d'affichage des consultations.</p>
     <meta http-equiv="refresh" content="3;url=affichage_consultations.php">
+
+    <?php
+    include('footer.php');
+    ?>
 
 </body>
 </html>

@@ -1,18 +1,7 @@
 <?php
 include('menu.php');
-session_start();
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
+include('bdd.php');
 
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
 
 // Initialisation des variables
 $repartition_usagers = array("moins25" => array("hommes" => 0, "femmes" => 0),
@@ -21,12 +10,7 @@ $repartition_usagers = array("moins25" => array("hommes" => 0, "femmes" => 0),
 $duree_consultations = array();
 
 try {
-    // Connexion à la base de données avec PDO
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Définir le mode d'erreur PDO à exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Récupération de la répartition des usagers selon leur âge
+    // Récupération de la répartition des patients selon leur âge
     $sql_repartition_usagers = "SELECT 
         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, date_naissance, CURDATE()) < 25 AND civilite = 'M.' THEN 1 ELSE 0 END) AS moins25_hommes,
         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, date_naissance, CURDATE()) < 25 AND civilite = 'Mme' THEN 1 ELSE 0 END) AS moins25_femmes,
@@ -61,53 +45,14 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistiques</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            text-align: center;
-            padding: 20px;
-        }
-
-        h2 {
-            margin-top: 30px;
-        }
-
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-        }
-
-        .tab2{
-            margin-bottom: 300px;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #4caf50;
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="../Css/statistiques.css">
 </head>
 <body>
 
     <h1>Statistiques</h1>
 
     <?php
-    // Affichage de la répartition des usagers selon leur âge
+    // Affichage de la répartition des patients selon leur âge
     echo "<h2>Répartition des patients selon leur âge et sexe</h2>";
     echo "<table class='tab1' border='1'>";
     echo "<tr><th>Tranche d'âge</th><th>Nb Hommes</th><th>Nb Femmes</th></tr>";
@@ -125,6 +70,10 @@ try {
         echo "<tr><td>$nom_medecin</td><td>$total_duree</td></tr>";
     }
     echo "</table>";
+    ?>
+
+    <?php
+    include('footer.php');
     ?>
 
 </body>

@@ -1,13 +1,6 @@
 <?php
 include('menu.php');
-session_start();
-
-// Vérifier si l'utilisateur est authentifié
-if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authentifie'] !== true) {
-    // Rediriger vers la page de connexion s'il n'est pas authentifié
-    header("Location: login.php");
-    exit();
-}
+include('bdd.php');
 ?>
 
 <!DOCTYPE html>
@@ -16,27 +9,7 @@ if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authe
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil - Santé ! Mais pas des pieds..</title>
-    <style>
-        h1 {
-            text-align: center;
-        }
-
-        .container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .index {
-            padding: 80px; /* Adjust the padding as needed */
-        }
-
-        .text {
-            text-align: center;
-            
-        }
-    </style>
+    <link rel="stylesheet" href="../Css/index.css">
 </head>
 <body>
 
@@ -64,6 +37,10 @@ if (!isset($_SESSION['utilisateur_authentifie']) || $_SESSION['utilisateur_authe
             </div>
         </div>
     </div>
+
+    <?php
+        include('footer.php');
+    ?>
     
 </body>
 </html>

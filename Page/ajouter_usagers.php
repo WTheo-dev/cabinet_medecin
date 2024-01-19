@@ -1,27 +1,17 @@
 <?php
 include('menu.php');
-
-// Informations de connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cabinet_medical";
+include('bdd.php');
 
 // Initialiser les variables pour stocker les valeurs du formulaire
 $civilite = $nom = $prenom = $adresse = $date_naissance = $lieu_naissance = $num_secu_sociale = $id_medecin_referent = "";
 $error_message = "";
 
 try {
-    // Connexion à la base de données avec PDO
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Définir le mode d'erreur PDO à exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     // Requête pour récupérer la liste des médecins (pour la liste déroulante du médecin référent)
     $sql_medecins = "SELECT id, nom, prenom FROM medecins";
     $result_medecins = $conn->query($sql_medecins);
 
-    // Traitement du formulaire d'ajout d'usager
+    // Traitement du formulaire d'ajout du patient
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Récupérer les données du formulaire, y compris l'id du médecin référent
         $civilite = $_POST["civilite"];
@@ -49,7 +39,7 @@ try {
                 if ($result_check_medecin['count_medecin'] === 0) {
                     $error_message = "Le médecin référent spécifié n'existe pas.";
                 } else {
-                    // Requête pour insérer un nouvel usager avec le médecin référent
+                    // Requête pour insérer un nouveau patient avec le médecin référent
                     $sql = "INSERT INTO usagers (civilite, nom, prenom, adresse, date_naissance, lieu_naissance, num_secu_sociale, id_medecin_referent) 
                             VALUES (:civilite, :nom, :prenom, :adresse, :date_naissance, :lieu_naissance, :num_secu_sociale, :id_medecin_referent)";
 
@@ -65,11 +55,11 @@ try {
 
                     $stmt->execute();
 
-                    echo "<h3 style='color: green;'>Usager ajouté avec succès. Vous allez être redirigé vers la page d'affichage des usagers.</h3>";
+                    echo "<h3 style='color: green;'>Patient ajouté avec succès. Vous allez être redirigé vers la page d'affichage des patients.</h3>";
                     header("refresh:3;url=affichage_usagers.php");
                 }
             } else {
-                // Requête pour insérer un nouvel usager sans médecin référent
+                // Requête pour insérer un nouveau patient sans médecin référent
                 $sql = "INSERT INTO usagers (civilite, nom, prenom, adresse, date_naissance, lieu_naissance, num_secu_sociale) 
                         VALUES (:civilite, :nom, :prenom, :adresse, :date_naissance, :lieu_naissance, :num_secu_sociale)";
 
@@ -100,51 +90,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un patient</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        h2 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        form {
-            width: 50%;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 300px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="../Css/ajouter_usagers.css">
 </head>
 <body>
 
@@ -155,7 +101,6 @@ try {
         <select name="civilite" required>
             <option value="M.">M.</option>
             <option value="Mme">Mme</option>
-            <!-- Ajouter d'autres options si nécessaire -->
         </select><br>
 
         <label for="nom">Nom:</label>
@@ -194,6 +139,10 @@ try {
 
         <input type="submit" value="Enregistrer Usager">
     </form>
+
+    <?php
+        include('footer.php');
+    ?>
 
 </body>
 </html>
