@@ -15,7 +15,7 @@
 
 # Connexion
 ```
-Elle permet une sécurité pour la connexion au site web, à l'aide d'une vérification d'authentification permettant de ne pas pouvoir accéder au différentes pages du site web tant que nous ne sommes pas authentifié.
+Elle permet une sécurité pour la connexion au site web, à l'aide d'une vérification d'authentification permettant de ne pas pouvoir accéder aux différentes pages du site web tant que nous ne sommes pas authentifiés.
 ```
 
 # Gestion des Patients
