@@ -34,7 +34,7 @@ Modification des détails du médecin, y compris les horaires et les coordonnée
 Suppression d'un médecin du système si nécessaire.
 ```
 
-#Prise de Consultation
+# Prise de Consultation
 ```
 Planification des consultations en ligne avec choix du médecin, de la date et de l'heure.
 Liste des consultations à venir pour chaque patient.
